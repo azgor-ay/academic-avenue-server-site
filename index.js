@@ -5,7 +5,6 @@ const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
-
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -50,9 +49,23 @@ async function run() {
       const result = await collegesCollection.find(query).toArray();
       res.send(result);
     });
+    
+    app.get("/colleges", async (req, res) => {
+      let query = {};
+      if (req.query.id) {
+        query = { _id: new ObjectId(req.query.id) };
+      }
+      const result = await collegesCollection.find(query).toArray();
+      res.send(result);
+    });
 
     app.get("/feedbacks", async (req, res) => {
-      const result = await feedbackCollection.find().toArray()
+      const result = await feedbackCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/researches", async (req, res) => {
+      const result = await researchesCollection.find().toArray();
       res.send(result);
     });
 
@@ -89,13 +102,12 @@ async function run() {
     });
 
     app.get("/users", async (req, res) => {
-
-      const user = await usersCollection.findOne(query);
-      const result = { admin: user?.role === "admin" };
+      const query = { email: { $eq: req.query.email } };
+      const result = await usersCollection.findOne(query);
       res.send(result);
     });
 
-       console.log(
+    console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
